@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skynet — upload it, we print it, you collect it</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0B1220;
+    --ink-soft: #5B6472;
+    --bg: #FFFFFF;
+    --bg-raised: #F5F7FB;
+    --accent: #4B21A6;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #F0E8FB;
+    --orange: #E8480C;
+    --green: #16A34A;
+    --line: #E4E7EC;
+    --shadow: 0 2px 4px rgba(16,24,40,.03), 0 12px 32px rgba(75,33,166,.08);
+    --font-display: 'Manrope', -apple-system, Segoe UI, Roboto, sans-serif;
+    --font-body: 'Inter', -apple-system, Segoe UI, Roboto, sans-serif;
+    --font-mono: 'Inter', -apple-system, Segoe UI, Roboto, sans-serif;
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --radius-sm: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #F1F4F9;
+      --ink-soft: #9AA3AF;
+      --bg: #0B0D12;
+      --bg-raised: #141821;
+      --accent: #9B7BEF;
+      --accent-ink: #FFFFFF;
+      --accent-soft: #2A1F4D;
+      --orange: #FF8A3D;
+      --green: #34C271;
+      --line: #232733;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #F1F4F9;
+    --ink-soft: #9AA3AF;
+    --bg: #0B0D12;
+    --bg-raised: #141821;
+    --accent: #9B7BEF;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #2A1F4D;
+    --orange: #FF8A3D;
+    --green: #34C271;
+    --line: #232733;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.55;
+  }
+  a { color: inherit; }
+  img { max-width: 100%; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Header ---------- */
+  header.site { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--line); z-index: 20; }
+  .site-bar { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; gap: 16px; flex-wrap: wrap; }
+  .mark { display: flex; align-items: center; gap: 9px; font-family: var(--font-display); font-weight: 800; font-size: 1.28rem; text-decoration: none; color: var(--accent); }
+  .mark .mark-badge {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  nav.site-nav { display: flex; align-items: center; gap: 24px; font-size: 0.92rem; }
+  nav.site-nav a { text-decoration: none; color: var(--ink-soft); font-weight: 500; }
+  nav.site-nav a:hover, nav.site-nav a:focus-visible { color: var(--ink); }
+  nav.site-nav a.nav-cta {
+    background: var(--accent); color: var(--accent-ink); padding: 9px 18px; border-radius: 999px; font-weight: 600;
+  }
+  nav.site-nav a.nav-cta:hover { opacity: .9; }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 56px 0 40px; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 44px; align-items: center; }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--bg-raised); border: 1px solid var(--line);
+    padding: 6px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; color: var(--ink-soft);
+  }
+  .pill.accent { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+  .pill .dot-live { width: 6px; height: 6px; border-radius: 50%; background: var(--orange); }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.3rem, 4.6vw, 3.5rem);
+    line-height: 1.08;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+  }
+  .hero p.lead { font-size: 1.1rem; color: var(--ink-soft); max-width: 48ch; margin: 0 0 26px; }
+  .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: var(--accent-ink);
+    border: 1px solid var(--accent);
+    font-family: var(--font-body); font-weight: 600; font-size: 0.96rem;
+    padding: 13px 22px; border-radius: var(--radius-md);
+    text-decoration: none; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(51,85,240,.28);
+  }
+  .btn:hover { opacity: .92; transform: translateY(-1px); }
+  .btn:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .btn.ghost { background: var(--bg); color: var(--ink); border: 1px solid var(--line); box-shadow: none; }
+  .btn.ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--bg); }
+
+  .trust-bar { font-size: 0.86rem; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .trust-bar .dot { color: var(--line); }
+
+  /* Ticket / stat card */
+  .stub {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 26px;
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    box-shadow: var(--shadow);
+  }
+  .stub-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .stub .stub-title { font-family: var(--font-display); font-size: 1.02rem; color: var(--ink); margin: 0; font-weight: 700; }
+  .stamp-badge {
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+  }
+  .stub .stub-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
+  .stub .stub-row:last-child { border-bottom: none; }
+  .stub .stub-row span:last-child { color: var(--ink); font-weight: 600; }
+
+  /* ---------- Comparison ---------- */
+  section.compare { padding: 48px 0; border-top: 1px solid var(--line); }
+  .section-kicker { font-size: 0.84rem; color: var(--accent); font-weight: 700; margin: 0 0 8px; }
+  section.compare h2, section.pricing h2, section.testimonials h2, section.faq h2 {
+    font-family: var(--font-display); font-weight: 800; font-size: 2rem; margin: 0 0 10px; max-width: 22ch; letter-spacing: -0.01em;
+  }
+  .section-sub { color: var(--ink-soft); margin: 0 0 24px; max-width: 52ch; }
+  .card-wrap { background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); }
+  table.compare-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  table.compare-table th, table.compare-table td { text-align: left; padding: 15px 20px; border-bottom: 1px solid var(--line); }
+  table.compare-table tr:last-child td { border-bottom: none; }
+  table.compare-table th { color: var(--ink-soft); font-weight: 600; font-size: 0.8rem; background: var(--bg-raised); }
+  table.compare-table td:last-child { font-weight: 700; color: var(--green); }
+  table.compare-table td:nth-child(2) { color: var(--ink-soft); text-decoration: line-through; }
+
+  /* ---------- How it works ---------- */
+  section.steps { padding: 48px 0 56px; border-top: 1px solid var(--line); }
+  .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .step {
+    padding: 26px; border: 1px solid var(--line); border-radius: var(--radius-lg);
+    background: var(--bg-raised); box-shadow: var(--shadow); position: relative;
+  }
+  .step .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 9px;
+    background: var(--accent-soft); color: var(--accent);
+    font-family: var(--font-display); font-weight: 700; font-size: 0.85rem;
+    margin-bottom: 14px;
+  }
+  .step h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; margin: 0 0 8px; }
+  .step p { color: var(--ink-soft); margin: 0; font-size: 0.94rem; }
+
+  /* ---------- Order section ---------- */
+  section.order { padding: 24px 0 64px; border-top: 1px solid var(--line); }
+  .order-head { margin-bottom: 28px; }
+  .order-head h2 { font-family: var(--font-display); font-weight: 800; font-size: 1.95rem; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .order-head p { color: var(--ink-soft); margin: 0; }
+  .order-grid { display: grid; grid-template-columns: 1.3fr 0.85fr; gap: 32px; align-items: start; }
+
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 0.84rem; color: var(--ink-soft); margin-bottom: 8px; font-weight: 600; }
+  .dropzone {
+    border: 1.5px dashed var(--line); border-radius: var(--radius-md);
+    padding: 22px; text-align: left; background: var(--bg-raised);
+    display: flex; align-items: center; gap: 14px; cursor: pointer;
+  }
+  .dropzone:hover { border-color: var(--accent); }
+  .dropzone .dz-icon {
+    flex-shrink: 0; width: 38px; height: 38px; border-radius: var(--radius-sm);
+    background: var(--accent-soft); display: flex; align-items: center; justify-content: center;
+  }
+  .dropzone .dz-text strong { display: block; font-size: 0.95rem; }
+  .dropzone .dz-text span { font-size: 0.82rem; color: var(--ink-soft); }
+  input[type="file"] { display: none; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  input[type="number"], select {
+    width: 100%; font-family: var(--font-body); font-size: 0.95rem;
+    padding: 11px 14px; border: 1px solid var(--line); border-radius: var(--radius-md);
+    background: var(--bg-raised); color: var(--ink);
+  }
+
+  .choice-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .choice {
+    border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px;
+    font-size: 0.88rem; font-weight: 500; cursor: pointer; background: var(--bg-raised); user-select: none;
+  }
+  .choice input { display: none; }
+  .choice.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+
+  /* Receipt */
+  .receipt {
+    background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    padding: 26px; position: sticky; top: 88px; box-shadow: var(--shadow);
+  }
+  .receipt h3 { font-family: var(--font-display); font-size: 1.12rem; margin: 0 0 4px; font-weight: 700; }
+  .receipt .sub { font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 18px; }
+  .receipt .line { display: flex; justify-content: space-between; font-size: 0.92rem; padding: 9px 0; border-bottom: 1px solid var(--line); color: var(--ink-soft); }
+  .receipt .line span:last-child { color: var(--ink); font-weight: 500; }
+  .receipt .total { display: flex; justify-content: space-between; padding-top: 16px; margin-top: 8px; font-size: 1.4rem; color: var(--ink); font-weight: 800; font-family: var(--font-display); }
+  .receipt .total .amt { color: var(--accent); }
+  .receipt .note { font-size: 0.74rem; color: var(--ink-soft); margin-top: 14px; }
+  .receipt .btn { width: 100%; justify-content: center; margin-top: 16px; }
+
+  /* ---------- Pricing ---------- */
+  section.pricing { padding: 24px 0 60px; border-top: 1px solid var(--line); }
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 28px 0 48px; }
+  .tier { border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 28px 24px; background: var(--bg-raised); position: relative; box-shadow: var(--shadow); }
+  .tier.featured { border-color: var(--accent); background: var(--bg); box-shadow: 0 8px 28px rgba(51,85,240,.14); }
+  .tier-badge { position: absolute; top: -12px; left: 24px; background: var(--orange); color: white; font-size: 0.72rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; margin: 0; }
+  .tier-name { font-family: var(--font-display); font-size: 1.05rem; margin: 6px 0 8px; font-weight: 700; }
+  .tier-price { font-family: var(--font-display); font-weight: 800; font-size: 2.1rem; margin: 0 0 8px; }
+  .tier-price span { font-size: 0.9rem; color: var(--ink-soft); font-weight: 500; }
+  .tier-desc { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 18px; }
+  .tier ul { list-style: none; margin: 0 0 22px; padding: 0; font-size: 0.88rem; }
+  .tier li { padding: 8px 0; border-bottom: 1px solid var(--line); color: var(--ink-soft); display: flex; gap: 8px; align-items: center; }
+  .tier li::before { content: "✓"; color: var(--green); font-weight: 700; }
+  .tier li:last-child { border-bottom: none; }
+  .rates-heading { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; margin: 0 0 16px; }
+  table.rates { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  table.rates th, table.rates td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+  table.rates tr:last-child td { border-bottom: none; }
+  table.rates th { color: var(--ink-soft); font-weight: 600; font-size: 0.8rem; }
+  table.rates td.amt { font-weight: 700; color: var(--ink); }
+
+  /* ---------- Testimonials ---------- */
+  section.testimonials { padding: 48px 0; border-top: 1px solid var(--line); }
+  .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 24px; }
+  .testi-grid blockquote { margin: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 24px; background: var(--bg-raised); box-shadow: var(--shadow); }
+  .stars { color: var(--green); font-size: 0.85rem; margin-bottom: 12px; }
+  .testi-grid p { font-size: 0.96rem; margin: 0 0 16px; color: var(--ink); }
+  .testi-grid cite { font-style: normal; font-size: 0.85rem; color: var(--ink-soft); font-weight: 600; }
+
+  /* ---------- FAQ ---------- */
+  section.faq { padding: 48px 0 64px; border-top: 1px solid var(--line); }
+  .faq-list { margin-top: 24px; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-raised); box-shadow: var(--shadow); }
+  .faq-item { border-bottom: 1px solid var(--line); }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q {
+    width: 100%; text-align: left; background: none; border: none; color: var(--ink);
+    font-family: var(--font-body); font-weight: 600; font-size: 1rem;
+    padding: 18px 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  }
+  .faq-icon {
+    color: var(--accent); font-size: 1.2rem; font-weight: 700; transition: transform .2s ease;
+    width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height .25s ease; }
+  .faq-a p { color: var(--ink-soft); margin: 0 22px 20px; font-size: 0.94rem; max-width: 60ch; }
+  .faq-item.open .faq-a { max-height: 200px; }
+
+  /* ---------- Footer ---------- */
+  footer.site { border-top: 1px solid var(--line); padding: 40px 0 44px; background: var(--bg-raised); }
+  .foot-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 24px; font-size: 0.9rem; }
+  .foot-grid h4 { font-family: var(--font-display); font-size: 0.85rem; color: var(--ink); font-weight: 700; margin: 0 0 12px; }
+  .foot-grid p { margin: 0 0 8px; color: var(--ink-soft); }
+  .foot-grid a { text-decoration: none; color: var(--ink-soft); }
+  .foot-grid a:hover { color: var(--accent); }
+
+  /* ---------- Motion ---------- */
+  @keyframes riseIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes badgeIn { 0% { opacity: 0; transform: scale(0.7); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes pulseTotal { 0% { transform: scale(1); } 35% { transform: scale(1.08); } 100% { transform: scale(1); } }
+
+  .hero .badge-row, .hero h1, .hero p.lead, .hero .hero-ctas, .hero .trust-bar, .hero .stub {
+    opacity: 0; animation: riseIn 0.6s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  .hero .badge-row { animation-delay: 0.02s; }
+  .hero h1 { animation-delay: 0.08s; }
+  .hero p.lead { animation-delay: 0.16s; }
+  .hero .hero-ctas { animation-delay: 0.24s; }
+  .hero .trust-bar { animation-delay: 0.3s; }
+  .hero .stub { animation-delay: 0.2s; }
+  .stub .stamp-badge { opacity: 0; animation: badgeIn 0.4s ease forwards; animation-delay: 0.7s; }
+
+  .step, .tier, .testi-grid blockquote { opacity: 0; transform: translateY(12px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .step.in-view, .tier.in-view, .testi-grid blockquote.in-view { opacity: 1; transform: translateY(0); }
+
+  .receipt .total.pulse .amt { display: inline-block; animation: pulseTotal 0.32s ease; }
+
+  .choice, .btn, .dropzone, .step, .tier { transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease; }
+  .choice:active, .btn:active, .dropzone:active { transform: scale(0.98); }
+  .step:hover, .tier:hover, .testi-grid blockquote:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(16,24,40,.09); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero .badge-row, .hero h1, .hero p.lead, .hero .hero-ctas, .hero .trust-bar, .hero .stub, .stub .stamp-badge, .step, .tier, .testi-grid blockquote {
+      animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important;
+    }
+  }
+
+  .hero-bg {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg::before, .hero-bg::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.35;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .hero-bg::before {
+    width: 420px; height: 420px;
+    background: var(--accent);
+    top: -160px; left: -120px;
+  }
+  .hero-bg::after {
+    width: 380px; height: 380px;
+    background: var(--orange);
+    top: -60px; right: -140px;
+    opacity: 0.22;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hero-bg::before, :root:not([data-theme="light"]) .hero-bg::after { opacity: 0.18; } }
+  :root[data-theme="dark"] .hero-bg::before, :root[data-theme="dark"] .hero-bg::after { opacity: 0.18; }
+  .hero { position: relative; z-index: 1; }
+
+  .stat-row { display: flex; gap: 28px; margin-top: 28px; flex-wrap: wrap; }
+  .stat-row .stat-num { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--ink); line-height: 1; }
+  .stat-row .stat-label { font-size: 0.78rem; color: var(--ink-soft); margin-top: 4px; }
+
+  /* ---------- Why Skynet ---------- */
+  section.why { padding: 52px 0; border-top: 1px solid var(--line); }
+  .why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 28px; }
+  .why-card { text-align: left; }
+  .why-icon {
+    width: 46px; height: 46px; border-radius: 13px;
+    background: linear-gradient(135deg, var(--accent-soft), var(--bg-raised));
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+  .why-card h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.02rem; margin: 0 0 6px; }
+  .why-card p { color: var(--ink-soft); font-size: 0.9rem; margin: 0; }
+
+  .social-row { display: flex; gap: 10px; margin-top: 14px; }
+  .social-row a {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; text-decoration: none; color: var(--ink-soft);
+  }
+  .social-row a:hover { color: var(--accent); border-color: var(--accent); }
+
+  @media (max-width: 780px) {
+    .why-grid { grid-template-columns: 1fr 1fr; }
+    .stat-row { gap: 20px; }
+  }
+
+  @media (max-width: 780px) {
+    .hero { grid-template-columns: 1fr; padding-top: 32px; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .order-grid { grid-template-columns: 1fr; }
+    .receipt { position: static; }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+    nav.site-nav a:not(.nav-cta) { display: none; }
+    .row2 { grid-template-columns: 1fr; }
+    .tiers { grid-template-columns: 1fr; }
+    .testi-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap site-bar">
+    <a class="mark" href="#top">
+      <span class="mark-badge">
+        <svg width="22" height="22" viewBox="0 0 170 144" xmlns="http://www.w3.org/2000/svg">
+          <path d="M28 78 C 44 46, 78 32, 112 40 C 128 44, 140 52, 148 62 C 134 58, 118 56, 104 60 C 122 64, 136 72, 144 84 C 126 76, 106 72, 88 74 C 104 80, 116 90, 122 102 C 100 90, 74 84, 50 88 C 40 90, 32 84, 28 78 Z" fill="#FF7A18"/>
+        </svg>
+      </span>
+      Skynet
+    </a>
+    <nav class="site-nav">
+      <a href="#order">Order</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://www.google.com/maps/place/Skynet+Computers/@10.9870189,78.3344328,17z/data=!3m1!4b1!4m6!3m5!1s0x3baa49a98a267cef:0x4dba91d95fbdfbd7!8m2!3d10.9870189!4d78.3370077!16s%2Fg%2F11g7195pd9" target="_blank" rel="noopener">Location</a>
+      <a class="nav-cta" href="#order">Print now</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero-bg">
+  <section class="hero wrap">
+    <div>
+      <svg width="52" height="52" viewBox="0 0 170 144" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:16px;">
+        <circle cx="85" cy="72" r="66" fill="var(--bg-raised)" stroke="var(--line)" stroke-width="2"/>
+        <path d="M28 78 C 44 46, 78 32, 112 40 C 128 44, 140 52, 148 62 C 134 58, 118 56, 104 60 C 122 64, 136 72, 144 84 C 126 76, 106 72, 88 74 C 104 80, 116 90, 122 102 C 100 90, 74 84, 50 88 C 40 90, 32 84, 28 78 Z" fill="#FF7A18"/>
+      </svg>
+      <div class="badge-row">
+        <a class="pill accent" href="https://www.google.com/maps/place/Skynet+Computers/@10.9870189,78.3344328,17z/data=!3m1!4b1!4m6!3m5!1s0x3baa49a98a267cef:0x4dba91d95fbdfbd7!8m2!3d10.9870189!4d78.3370077!16s%2Fg%2F11g7195pd9" target="_blank" rel="noopener" style="text-decoration:none;"><span class="dot-live"></span> Thottiyam, Tiruchirappalli</a>
+        <span class="pill">Cash on delivery</span>
+      </div>
+      <h1>Online printing for notes, assignments &amp; thesis.</h1>
+      <p class="lead">Upload your file, choose print options, and get it printed and ready — cheaper than your local Xerox shop.</p>
+      <div class="hero-ctas">
+        <a class="btn" href="#order">Start printing now</a>
+        <a class="btn ghost" href="#pricing">See pricing</a>
+      </div>
+      <div class="trust-bar">
+        <span>4.8★ from local customers</span>
+        <span class="dot">·</span>
+        <span>Secure checkout</span>
+        <span class="dot">·</span>
+        <span>Same-day dispatch</span>
+      </div>
+      <div class="stat-row">
+        <div><div class="stat-num">2,500+</div><div class="stat-label">Prints delivered</div></div>
+        <div><div class="stat-num">4.8★</div><div class="stat-label">Google rating</div></div>
+        <div><div class="stat-num">Same-day</div><div class="stat-label">Turnaround</div></div>
+      </div>
+    </div>
+    <div class="stub">
+      <div class="stub-top">
+        <p class="stub-title">Order #0412</p>
+        <span class="stamp-badge">Ready to print</span>
+      </div>
+      <div class="stub-row"><span>File</span><span>assignment.pdf</span></div>
+      <div class="stub-row"><span>Pages × copies</span><span>18 × 2</span></div>
+      <div class="stub-row"><span>Mode</span><span>B/W · double-sided</span></div>
+      <div class="stub-row"><span>Binding</span><span>Spiral</span></div>
+      <div class="stub-row"><span>Ready by</span><span>Today, 5:30pm</span></div>
+    </div>
+  </section>
+  </div>
+
+  <section class="compare">
+    <div class="wrap">
+      <p class="section-kicker">Wholesale rates</p>
+      <h2>Priced lower than the shop down the road.</h2>
+      <p class="section-sub">Ordering in bulk keeps our per-page cost down — the saving passes straight to you.</p>
+      <div class="card-wrap">
+        <table class="compare-table">
+          <thead><tr><th>Service</th><th>Local shop</th><th>Skynet</th></tr></thead>
+          <tbody>
+            <tr><td>Colour, per page</td><td>₹10 – ₹20</td><td>₹8</td></tr>
+            <tr><td>Black &amp; white, per page</td><td>₹2 – ₹5</td><td>₹2</td></tr>
+            <tr><td>Hard binding / thesis</td><td>₹500 – ₹800</td><td>₹150</td></tr>
+            <tr><td>Spiral binding</td><td>₹60 – ₹100</td><td>₹30</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="why">
+    <div class="wrap">
+      <p class="section-kicker">Why Skynet</p>
+      <h2 style="font-family:var(--font-display);font-weight:800;font-size:1.9rem;margin:0 0 8px;letter-spacing:-0.01em;">Built for students and offices who can't wait around.</h2>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L2 6v6c0 4 3.5 6.5 8 8 4.5-1.5 8-4 8-8V6l-8-4Z" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10l2 2 4-4" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3>Reliable quality</h3>
+          <p>Every job checked before dispatch — no smudges, no misprints.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <h3>Fast turnaround</h3>
+          <p>Most orders ready the same day, even with binding.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10h14M3 10l4-4M3 10l4 4" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3>Lower prices</h3>
+          <p>Bulk-rate printing passed on to you, page for page.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 6l7-4 7 4v5c0 4.5-3 7-7 9-4-2-7-4.5-7-9V6Z" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+          <h3>Your files stay private</h3>
+          <p>Deleted right after your order is dispatched.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="steps" id="how">
+    <div class="wrap">
+      <p class="section-kicker">Process</p>
+      <h2 style="font-family:var(--font-display);font-weight:800;font-size:1.9rem;margin:0 0 28px;letter-spacing:-0.01em;">Three steps. No shop visits.</h2>
+      <div class="steps-grid">
+        <div class="step">
+          <span class="num">01</span>
+          <h3>Upload</h3>
+          <p>Drop in your PDF, Word file, or a clear photo of the pages. We'll confirm the page count with you.</p>
+        </div>
+        <div class="step">
+          <span class="num">02</span>
+          <h3>Choose</h3>
+          <p>Pick colour or black &amp; white, paper size, sides, and binding. The price updates as you go.</p>
+        </div>
+        <div class="step">
+          <span class="num">03</span>
+          <h3>Collect or get it delivered</h3>
+          <p>We'll message you when it's ready. Walk in and pick it up, or ask for local drop-off.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="order" id="order">
+    <div class="wrap">
+      <div class="order-head">
+        <h2>Build your order</h2>
+        <p>Fill this in and send it to us on WhatsApp — no account needed.</p>
+      </div>
+      <div class="order-grid">
+        <div>
+          <div class="field">
+            <label for="fileInput">Your file</label>
+            <label class="dropzone" for="fileInput" id="dropzone">
+              <span class="dz-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 11V2M8 2L4.5 5.5M8 2L11.5 5.5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 11V13.5H13.5V11" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>
+              </span>
+              <span class="dz-text">
+                <strong id="dzLabel">Choose a file to attach</strong>
+                <span>PDF, DOC, or JPG — we'll confirm pages with you</span>
+              </span>
+            </label>
+            <input type="file" id="fileInput">
+          </div>
+
+          <div class="row2">
+            <div class="field">
+              <label for="pages">Pages per copy</label>
+              <input type="number" id="pages" min="1" value="10">
+            </div>
+            <div class="field">
+              <label for="copies">Number of copies</label>
+              <input type="number" id="copies" min="1" value="1">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Colour</label>
+            <div class="choice-group" id="colourGroup">
+              <label class="choice active"><input type="radio" name="colour" value="bw" checked>Black &amp; white</label>
+              <label class="choice"><input type="radio" name="colour" value="color">Colour</label>
+            </div>
+          </div>
+
+          <div class="row2">
+            <div class="field">
+              <label for="paperSize">Paper size</label>
+              <select id="paperSize">
+                <option value="a4">A4</option>
+                <option value="a5">A5</option>
+                <option value="legal">Legal</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Sides</label>
+              <div class="choice-group" id="sidesGroup">
+                <label class="choice active"><input type="radio" name="sides" value="single" checked>Single</label>
+                <label class="choice"><input type="radio" name="sides" value="double">Double</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="binding">Binding</label>
+            <select id="binding">
+              <option value="none">No binding</option>
+              <option value="spiral">Spiral — ₹30</option>
+              <option value="soft">Soft cover — ₹60</option>
+              <option value="hard">Hard cover — ₹150</option>
+            </select>
+          </div>
+        </div>
+
+        <aside class="receipt">
+          <h3>Order summary</h3>
+          <div class="sub">Estimate — final price confirmed at the counter</div>
+          <div class="line"><span id="rLines">18 pages × 1 copy</span><span id="rPageCost">₹0</span></div>
+          <div class="line"><span>Rate per page</span><span id="rRate">₹0.00</span></div>
+          <div class="line"><span>Binding</span><span id="rBinding">₹0</span></div>
+          <div class="total"><span>Total</span><span class="amt" id="rTotal">₹0</span></div>
+          <a class="btn" id="waBtn" href="#" target="_blank" rel="noopener">Send order on WhatsApp</a>
+          <div class="note">Tap the button to open WhatsApp with your order details filled in — attach the file there before sending.</div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing" id="pricing">
+    <div class="wrap">
+      <p class="section-kicker">Pricing</p>
+      <h2>Pick the paper your job deserves.</h2>
+      <div class="tiers">
+        <div class="tier">
+          <p class="tier-name">Standard B/W</p>
+          <p class="tier-price">₹2<span>/page</span></p>
+          <p class="tier-desc">The everyday choice for notes, assignments and drafts.</p>
+          <ul>
+            <li>75 GSM bright white paper</li>
+            <li>Crisp, submission-ready print</li>
+            <li>Any binding available</li>
+          </ul>
+          <a class="btn ghost" href="#order">Order standard</a>
+        </div>
+        <div class="tier featured">
+          <p class="tier-badge">Most ordered</p>
+          <p class="tier-name">Premium Colour</p>
+          <p class="tier-price">₹8<span>/page</span></p>
+          <p class="tier-desc">Vivid reproduction for projects, charts and photos.</p>
+          <ul>
+            <li>High-saturation laser print</li>
+            <li>Hardcover binding options</li>
+            <li>Same-day dispatch</li>
+          </ul>
+          <a class="btn" href="#order">Order in colour</a>
+        </div>
+        <div class="tier">
+          <p class="tier-name">Archival 100 GSM</p>
+          <p class="tier-price">₹3<span>/page</span></p>
+          <p class="tier-desc">Thicker stock for final theses and library copies.</p>
+          <ul>
+            <li>100 GSM premium bond</li>
+            <li>Built for hard binding</li>
+            <li>Gold embossing ready</li>
+          </ul>
+          <a class="btn ghost" href="#order">Order archival</a>
+        </div>
+      </div>
+
+      <h3 class="rates-heading">Full rate card</h3>
+      <div class="card-wrap">
+        <table class="rates">
+          <thead><tr><th>Item</th><th>Black &amp; white</th><th>Colour</th></tr></thead>
+          <tbody>
+            <tr><td>A4, per page</td><td class="amt">₹2.00</td><td class="amt">₹8.00</td></tr>
+            <tr><td>A5, per page</td><td class="amt">₹1.00</td><td class="amt">₹5.00</td></tr>
+            <tr><td>Legal, per page</td><td class="amt">₹3.00</td><td class="amt">₹10.00</td></tr>
+            <tr><td>Spiral binding</td><td class="amt" colspan="2">₹30 per copy</td></tr>
+            <tr><td>Soft cover binding</td><td class="amt" colspan="2">₹60 per copy</td></tr>
+            <tr><td>Hard cover binding</td><td class="amt" colspan="2">₹150 per copy</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials">
+    <div class="wrap">
+      <p class="section-kicker">Customers</p>
+      <h2>What people bring back to us.</h2>
+      <div class="testi-grid">
+        <blockquote>
+          <div class="stars">★★★★★</div>
+          <p>"Dropped off my project report the night before submission and it was bound and ready by morning. Saved me a trip across town."</p>
+          <cite>Divya K.</cite>
+        </blockquote>
+        <blockquote>
+          <div class="stars">★★★★★</div>
+          <p>"The colour prints for my design portfolio came out sharper than I expected, and the price was honestly half of what I was quoted elsewhere."</p>
+          <cite>Arjun M.</cite>
+        </blockquote>
+        <blockquote>
+          <div class="stars">★★★★★</div>
+          <p>"I liked that the total was shown before I confirmed anything. No surprises when I came to collect."</p>
+          <cite>Fathima S.</cite>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq" id="faq">
+    <div class="wrap">
+      <p class="section-kicker">Questions</p>
+      <h2>Frequently asked</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-q">How long does printing take?<span class="faq-icon">+</span></button>
+          <div class="faq-a"><p>Most orders are ready the same day if placed before 4pm. Larger binding jobs may take until the next morning.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Can I pay cash on delivery?<span class="faq-icon">+</span></button>
+          <div class="faq-a"><p>Yes — COD is available for local orders. Prepaid options are also shown at checkout on WhatsApp.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Is my file kept private?<span class="faq-icon">+</span></button>
+          <div class="faq-a"><p>Files are used only to print your order and are deleted once the job is dispatched.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Do you deliver, or is it pickup only?<span class="faq-icon">+</span></button>
+          <div class="faq-a"><p>Both — collect from the counter, or ask us on WhatsApp about local delivery to your address.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site" id="contact">
+  <div class="wrap foot-grid">
+    <div>
+      <svg width="180" height="88" viewBox="0 0 420 200" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:14px;">
+        <defs>
+          <linearGradient id="footSwoosh" x1="10" y1="30" x2="150" y2="90" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#FFC24B"/>
+            <stop offset="0.5" stop-color="#FF7A18"/>
+            <stop offset="1" stop-color="#E8480C"/>
+          </linearGradient>
+        </defs>
+        <circle cx="85" cy="72" r="66" fill="var(--bg)" stroke="var(--line)" stroke-width="2"/>
+        <path d="M28 78 C 44 46, 78 32, 112 40 C 128 44, 140 52, 148 62 C 134 58, 118 56, 104 60 C 122 64, 136 72, 144 84 C 126 76, 106 72, 88 74 C 104 80, 116 90, 122 102 C 100 90, 74 84, 50 88 C 40 90, 32 84, 28 78 Z" fill="url(#footSwoosh)"/>
+        <text x="176" y="82" font-family="Manrope, Arial, sans-serif" font-weight="800" font-size="46" letter-spacing="1" fill="var(--accent)">SKYNET</text>
+        <text x="177" y="104" font-family="Arial, sans-serif" font-weight="600" font-size="13" letter-spacing="0.5" fill="#E8480C">One-stop shop for print solutions</text>
+      </svg>
+      <p>21, Salem Road<br>Thottiyam, Tiruchirappalli<br>Tamil Nadu 621215</p>
+      <p>WhatsApp: +91 90809 85580</p>
+      <p>shop@skynet.example</p>
+      <a class="btn ghost" style="margin-top:6px;" href="https://www.google.com/maps/place/Skynet+Computers/@10.9870189,78.3344328,17z/data=!3m1!4b1!4m6!3m5!1s0x3baa49a98a267cef:0x4dba91d95fbdfbd7!8m2!3d10.9870189!4d78.3370077!16s%2Fg%2F11g7195pd9" target="_blank" rel="noopener">Get directions</a>
+      <div class="social-row">
+        <a href="https://wa.me/919080985580" target="_blank" rel="noopener" aria-label="WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20Zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1s-.6.8-.7.9-.3.2-.5.1a6.6 6.6 0 0 1-1.9-1.2 7 7 0 0 1-1.3-1.6c-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4c-.1-.1-.5-1.2-.7-1.7s-.4-.4-.5-.4h-.5a.9.9 0 0 0-.6.3 2.7 2.7 0 0 0-.9 2 4.7 4.7 0 0 0 1 2.5 10.6 10.6 0 0 0 4 3.6c.6.2 1 .4 1.4.5a3.3 3.3 0 0 0 1.5.1 2.5 2.5 0 0 0 1.6-1.1 2 2 0 0 0 .1-1.1c-.1-.1-.2-.2-.5-.3Z"/></svg></a>
+        <a href="https://www.google.com/maps/place/Skynet+Computers/@10.9870189,78.3344328,17z/data=!3m1!4b1!4m6!3m5!1s0x3baa49a98a267cef:0x4dba91d95fbdfbd7!8m2!3d10.9870189!4d78.3370077!16s%2Fg%2F11g7195pd9" target="_blank" rel="noopener" aria-label="Google Maps"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h4>Services</h4>
+      <p><a href="#order">Document printing</a></p>
+      <p><a href="#order">Colour printing</a></p>
+      <p><a href="#pricing">Spiral &amp; hard binding</a></p>
+      <p><a href="#order">Thesis printing</a></p>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <p><a href="#how">How it works</a></p>
+      <p><a href="#faq">FAQ</a></p>
+      <p><a href="#pricing">Pricing</a></p>
+    </div>
+    <div>
+      <h4>Hours</h4>
+      <p>Mon–Sat, 9:00am – 8:30pm</p>
+      <p>Sunday closed</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  const pagesEl = document.getElementById('pages');
+  const copiesEl = document.getElementById('copies');
+  const paperEl = document.getElementById('paperSize');
+  const bindingEl = document.getElementById('binding');
+  const fileInput = document.getElementById('fileInput');
+  const dzLabel = document.getElementById('dzLabel');
+
+  const rates = {
+    a4:    { bw: 2,  color: 8 },
+    a5:    { bw: 1,  color: 5 },
+    legal: { bw: 3,  color: 10 }
+  };
+  const bindingCost = { none: 0, spiral: 30, soft: 60, hard: 150 };
+
+  function getColour() {
+    const el = document.querySelector('input[name="colour"]:checked');
+    return el ? el.value : 'bw';
+  }
+  function getSides() {
+    const el = document.querySelector('input[name="sides"]:checked');
+    return el ? el.value : 'single';
+  }
+
+  function wireChoiceGroup(groupId) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    group.querySelectorAll('.choice').forEach(function(label) {
+      label.addEventListener('click', function() {
+        group.querySelectorAll('.choice').forEach(function(l) { l.classList.remove('active'); });
+        label.classList.add('active');
+        setTimeout(recalc, 0);
+      });
+    });
+  }
+  wireChoiceGroup('colourGroup');
+  wireChoiceGroup('sidesGroup');
+
+  fileInput.addEventListener('change', function() {
+    if (fileInput.files && fileInput.files[0]) {
+      dzLabel.textContent = fileInput.files[0].name;
+    } else {
+      dzLabel.textContent = 'Choose a file to attach';
+    }
+  });
+
+  function money(n) {
+    return '₹' + n.toFixed(2).replace(/\.00$/, '');
+  }
+
+  let lastTotal = null;
+
+  function recalc() {
+    const pages = Math.max(1, parseInt(pagesEl.value, 10) || 0);
+    const copies = Math.max(1, parseInt(copiesEl.value, 10) || 0);
+    const paper = paperEl.value;
+    const colour = getColour();
+    const binding = bindingEl.value;
+
+    const rate = rates[paper][colour === 'color' ? 'color' : 'bw'];
+    const pageCost = pages * copies * rate;
+    const bindCost = bindingCost[binding] * copies;
+    const total = pageCost + bindCost;
+
+    document.getElementById('rLines').textContent = pages + ' pages × ' + copies + (copies === 1 ? ' copy' : ' copies');
+    document.getElementById('rRate').textContent = money(rate);
+    document.getElementById('rPageCost').textContent = money(pageCost);
+    document.getElementById('rBinding').textContent = money(bindCost);
+    document.getElementById('rTotal').textContent = money(total);
+
+    if (lastTotal !== null && lastTotal !== total) {
+      const totalRow = document.querySelector('.receipt .total');
+      totalRow.classList.remove('pulse');
+      void totalRow.offsetWidth;
+      totalRow.classList.add('pulse');
+    }
+    lastTotal = total;
+
+    const sides = getSides();
+    const fileName = (fileInput.files && fileInput.files[0]) ? fileInput.files[0].name : 'not attached yet';
+    const msg = [
+      'New print order from the website:',
+      '- File: ' + fileName,
+      '- Pages: ' + pages + ' | Copies: ' + copies,
+      '- Paper: ' + paper.toUpperCase() + ' | Colour: ' + (colour === 'color' ? 'Colour' : 'B/W') + ' | Sides: ' + sides,
+      '- Binding: ' + binding,
+      '- Estimated total: ' + money(total)
+    ].join('\n');
+    document.getElementById('waBtn').href = 'https://wa.me/919080985580?text=' + encodeURIComponent(msg);
+  }
+
+  [pagesEl, copiesEl, paperEl, bindingEl].forEach(function(el) {
+    el.addEventListener('input', recalc);
+    el.addEventListener('change', recalc);
+  });
+
+  recalc();
+
+  document.querySelectorAll('.faq-item').forEach(function(item) {
+    const q = item.querySelector('.faq-q');
+    q.addEventListener('click', function() {
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(other) {
+        if (other !== item) other.classList.remove('open');
+      });
+      item.classList.toggle('open', !wasOpen);
+    });
+  });
+
+  if ('IntersectionObserver' in window) {
+    const revealEls = document.querySelectorAll('.step, .tier, .testi-grid blockquote');
+    const io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry, i) {
+        if (entry.isIntersecting) {
+          setTimeout(function() { entry.target.classList.add('in-view'); }, i * 70);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.25 });
+    revealEls.forEach(function(el) { io.observe(el); });
+  } else {
+    document.querySelectorAll('.step, .tier, .testi-grid blockquote').forEach(function(el) { el.classList.add('in-view'); });
+  }
+})();
+</script>
+
+</body>
+</html>
